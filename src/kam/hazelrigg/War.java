@@ -11,14 +11,10 @@ public class War {
     private Deck p2Deck = new Deck(26);
     private int turns = 0;
 
+    private Deck warDeck = new Deck(0);
+
     public War() {
         giveDecks();
-        System.out.println(p1Deck.getDeckString());
-        System.out.println(p2Deck.getDeckString());
-    }
-
-    public void play() {
-
     }
 
     private void giveDecks() {
@@ -35,30 +31,91 @@ public class War {
 
     }
 
-    boolean takeTurn() {
-        Card p1Card = p1Deck.drawCard();
-        Card p2Card = p2Deck.drawCard();
-        if (p1Card.getValue() > p2Card.getValue()) {
-            p1Deck.addToBottom(p1Card);
-            p1Deck.addToBottom(p2Card);
-        } else {
-            p2Deck.addToBottom(p1Card);
-            p2Deck.addToBottom(p2Card);
+    int takeTurn() {
+        this.turns++;
+
+        Card p1Card = drawCard(1);
+        Card p2Card = drawCard(2);
+
+        if (p1Card == null) {
+            return 2;
+        } else if (p2Card == null) {
+            return 1;
         }
-        //System.out.println(p1Deck.getDeckString() + " SIZE: " + p1Deck.getSize() + "\n" + p2Deck.getDeckString() + " SIZE: " + p2Deck.getSize());
-        return p1Deck.getSize() == 52 || p2Deck.getSize() == 52;
+
+        return finishTurn(p1Card, p2Card);
     }
 
-    private void declareWar() {
-        Card p1First = p1Deck.drawCard();
-        Card p1Second = p1Deck.drawCard();
-
-        Card p2First = p2Deck.drawCard();
-        Card p2Second = p2Deck.drawCard();
+    private int finishTurn(Card p1, Card p2) {
+        if (p1 == p2) {
+            warDeck.addCard(p1);
+            warDeck.addCard(p2);
+            int result = declareWar();
+            if (result < 1) return result;
+        } else if (p1.getValue() > p2.getValue()) {
+            p1Deck.addToBottom(p1);
+            p1Deck.addToBottom(p2);
+        } else {
+            p2Deck.addToBottom(p1);
+            p2Deck.addToBottom(p2);
+        }
+        return 0;
     }
 
-    int getTurns() {
+    private int declareWar() {
+        Card p1First = drawCard(1);
+        Card p1Second = drawCard(1);
+        if (p1First == null || p1Second == null) {
+            winWar(2);
+            return 2;
+        }
+        Card p2First = drawCard(2);
+        Card p2Second = drawCard(2);
+        if (p2First == null || p2Second == null) {
+            winWar(1);
+            return 1;
+        }
+
+        warDeck.addCard(p1First);
+        warDeck.addCard(p1Second);
+        warDeck.addCard(p2First);
+        warDeck.addCard(p2Second);
+
+        if (p1Second == p2Second) {
+            declareWar();
+        } else if (p1Second.getValue() > p2Second.getValue()) {
+            winWar(1);
+        } else if (p1Second.getValue() < p2Second.getValue()){
+            winWar(2);
+        }
+        return 0;
+    }
+
+    private void winWar(int player) {
+        if (player == 1) {
+            while (warDeck.getSize() > 0) {
+                p1Deck.addToBottom(warDeck.drawCard());
+            }
+        } else {
+            while (warDeck.getSize() > 0) {
+                p2Deck.addToBottom(warDeck.drawCard());
+            }
+        }
+        warDeck = new Deck(0);
+    }
+
+    private Card drawCard(int player) {
+        if (player == 1) {
+            if (p1Deck.getSize() < 1) return null;
+            return p1Deck.drawCard();
+        }
+        else {
+            if (p2Deck.getSize() < 1) return null;
+            return p2Deck.drawCard();
+        }
+    }
+
+    public int getTurns() {
         return turns;
     }
-
 }

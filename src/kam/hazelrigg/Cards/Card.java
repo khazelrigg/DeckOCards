@@ -57,6 +57,19 @@ public class Card {
         return value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Card)) {
+            return false;
+        }
+
+        Card card = (Card) o;
+
+        // Custom equality check here.
+        return this.value == card.getValue();
+    }
+
+
     private Suit getSuit() {
         return suit;
     }

@@ -33,6 +33,16 @@ public class Deck {
         return last;
     }
 
+    public Card drawCard(int e) {
+        Card last = deck.get(e);
+        for (int i = e; i > 0 ; i--) {
+            deck.set(i, deck.get(i - 1));
+        }
+        deck.set(0, last);
+        deck.remove(0);
+        return last;
+    }
+
     public void addToBottom(Card card) {
         deck.add(0, card);
     }
