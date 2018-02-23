@@ -6,7 +6,7 @@ import kam.hazelrigg.Cards.Deck;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class War {
+public class War implements CardGame {
     private Deck p1Deck = new Deck(26);
     private Deck p2Deck = new Deck(26);
     private Deck warDeck = new Deck(0);
@@ -19,6 +19,15 @@ public class War {
 
     War() {
         createPlayerDecks();
+    }
+
+    @Override
+    public void play() {
+        int winner = 0;
+        while (winner == 0) {
+            winner = takeTurn();
+        }
+        System.out.println("Player " + winner + " has won the war in " + turnCount + " turns!");
     }
 
     /**
@@ -37,21 +46,18 @@ public class War {
         }
     }
 
-    int takeTurn() {
+    private int takeTurn() {
         this.turnCount++;
-        p1turnCard = drawCard(p1Deck);
-        p2turnCard = drawCard(p2Deck);
+        p1turnCard = p1Deck.drawCard();
+        p2turnCard = p2Deck.drawCard();
 
-        switch (compareCards()) {
-            case -1:
-                battle();
-                break;
-            case 1:
-                reward(p1Deck);
-                break;
-            case 2:
-                reward(p2Deck);
-                break;
+        int i = compareCards();
+        if (i == -1) {
+            battle();
+        } else if (i == 1) {
+            reward(p1Deck);
+        } else if (i == 2) {
+            reward(p2Deck);
         }
 
         return checkWinner();
@@ -72,11 +78,11 @@ public class War {
 
     private void reward(Deck deck) {
         if (random.nextInt(10) < 6) {
-            deck.addCard(p1turnCard);
-            deck.addCard(p2turnCard);
+            deck.addToBottom(p1turnCard);
+            deck.addToBottom(p2turnCard);
         } else {
-            deck.addCard(p2turnCard);
-            deck.addCard(p2turnCard);
+            deck.addToBottom(p2turnCard);
+            deck.addToBottom(p1turnCard);
         }
 
         p1turnCard = null;
@@ -89,27 +95,23 @@ public class War {
         return 0;
     }
 
-
     private void battle() {
-        Card p1First = drawCard(p1Deck);
-        Card p1Second = drawCard(p1Deck);
+        Card p1First = p1Deck.drawCard();
+        Card p1Second = p1Deck.drawCard();
 
         if (p1First == null || p1Second == null) {
             winBattle(p2Deck);
             return;
         }
 
-        Card p2First = drawCard(p2Deck);
-        Card p2Second = drawCard(p2Deck);
+        Card p2First = p2Deck.drawCard();
+        Card p2Second = p2Deck.drawCard();
         if (p2First == null || p2Second == null) {
             winBattle(p1Deck);
             return;
         }
 
-        warDeck.addCard(p1First);
-        warDeck.addCard(p1Second);
-        warDeck.addCard(p2First);
-        warDeck.addCard(p2Second);
+        warDeck.addAllCards(p1First, p1Second, p2First, p2Second);
 
         if (p1Second == p2Second) {
             battle();
@@ -122,18 +124,15 @@ public class War {
 
     private void winBattle(Deck deck) {
         while (warDeck.getSize() != 0) {
-            deck.addToBottom(drawCard(warDeck));
+            deck.addToBottom(warDeck.drawCard());
         }
+        // Reset the war deck after giving away cards
         warDeck = new Deck(0);
         reward(deck);
     }
 
-    private Card drawCard(Deck deck) {
-        if (deck.getSize() < 1) return null;
-        return deck.drawCard();
-    }
-
-    public int getTurnCount() {
+    public int getTurns() {
         return turnCount;
     }
+
 }

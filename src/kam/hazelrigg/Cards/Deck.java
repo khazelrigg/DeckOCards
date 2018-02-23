@@ -23,6 +23,12 @@ public class Deck {
         deck.add(card);
     }
 
+    public void addAllCards(Card ...  c) {
+        for (Card card : c) {
+            addCard(card);
+        }
+    }
+
     public Card drawCard() {
         Card last = deck.get(deck.size() - 1);
         for (int i = deck.size() - 1; i > 0 ; i--) {
@@ -69,16 +75,11 @@ public class Deck {
 
     @Override
     public String toString() {
-        return deck.toString();
-    }
-
-    public String getDeckString() {
         StringBuilder bob = new StringBuilder();
         for (Card card : deck) {
-            bob.append(card.getShorthand()).append(" ");
+            bob.append(card).append(" ");
         }
         return bob.toString();
     }
-
 
 }
