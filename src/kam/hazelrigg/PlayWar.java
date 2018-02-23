@@ -1,20 +1,24 @@
 package kam.hazelrigg;
 
-import java.util.Scanner;
-
 public class PlayWar {
-    static Scanner kb = new Scanner(System.in);
+
     public static void main(String[] args) {
+        System.out.println(warAverages(10000));
+    }
+
+    private static long warAverages(int games) {
+        long average = 0;
+        for (int i = 0; i < games; i++) {
+            average += playWar();
+        }
+        return average / games;
+    }
+
+    private static int playWar() {
         War war = new War();
-        int winner = 0;
-        while (winner == 0) {
-            winner = war.takeTurn();
+        while (war.takeTurn() == 0) {
+            //nothing
         }
-        if (winner == 1) {
-            System.out.println("Player One Wins");
-        } else {
-            System.out.println("Player Two Wins");
-        }
-        System.out.println("TURNS: " + war.getTurns());
+        return war.getTurnCount();
     }
 }
