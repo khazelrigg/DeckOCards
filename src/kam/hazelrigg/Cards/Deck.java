@@ -73,6 +73,10 @@ public class Deck {
         return deck;
     }
 
+    public Card peek(int e) {
+        return deck.get(e);
+    }
+
     @Override
     public String toString() {
         StringBuilder bob = new StringBuilder();
