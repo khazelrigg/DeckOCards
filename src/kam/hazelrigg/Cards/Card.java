@@ -67,7 +67,6 @@ public class Card {
         }
         Card card = (Card) o;
 
-
         return this.value == card.value && this.suit == card.suit;
     }
 

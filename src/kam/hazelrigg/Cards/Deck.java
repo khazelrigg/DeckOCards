@@ -2,8 +2,9 @@ package kam.hazelrigg.Cards;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 
-public class Deck {
+public class Deck implements Iterable<Card> {
     private ArrayList<Card> deck;
 
     public Deck() {
@@ -69,12 +70,16 @@ public class Deck {
         }
     }
 
-    public ArrayList<Card> getDeck() {
+    public ArrayList<Card> getCards() {
         return deck;
     }
 
     public Card peek(int e) {
         return deck.get(e);
+    }
+
+    public void empty() {
+        deck = new ArrayList<>();
     }
 
     @Override
@@ -86,4 +91,26 @@ public class Deck {
         return bob.toString();
     }
 
+    @Override
+    public Iterator<Card> iterator() {
+        Iterator<Card> deckIterator = new Iterator<Card>() {
+            private int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < deck.size() && deck.get(index) != null;
+            }
+
+            @Override
+            public Card next() {
+                return deck.get(index++);
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+        return deckIterator;
+    }
 }
